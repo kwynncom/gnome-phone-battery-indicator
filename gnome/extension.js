@@ -1,4 +1,4 @@
-import St from 'gi://St'; // am I hard-linked?
+import St from 'gi://St'; // Am I hard-linked? 03:09am
 import Gio from 'gi://Gio';
 import { Extension } from 'resource:///org/gnome/shell/extensions/extension.js';
 import * as Main from 'resource:///org/gnome/shell/ui/main.js';
