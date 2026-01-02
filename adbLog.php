@@ -84,7 +84,10 @@ final class ADBLogReaderCl
     private mixed $process;
 
     private function ckProcForTerm() {
-	if (!($this->process ?? false)) return;
+	if (!($this->process ?? false)) {
+	    belg('logcat ckProcForTerm already no process or unset');
+	    return;
+	}
 	$status = proc_get_status($this->process);
 	if (!$status) {
 	    belg('loccat proc status not set');
@@ -94,6 +97,8 @@ final class ADBLogReaderCl
 	    belg('logcat proc running');
 	    return;
 	}
+
+	belg('logcat proc signaled status ' . $status['signaled'] ?? 'not signalled');
 	if ($status['signaled'] && (!($this->termed ?? false))) {
 	    $this->termed = true;
 	    belg('logcat signaled');

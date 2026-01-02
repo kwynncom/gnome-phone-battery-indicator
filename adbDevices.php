@@ -38,10 +38,15 @@ public function setok() {
 }
 
 public function doitDev() {
-    if (!$this->slowReinitLoop()) { 
-	$this->debounce(); 
+
+    $this->slowReinitLoop();
+    $this->devs10(); 
+
+    if (false /* !loop() as above */) { 
+	// $this->debounce(); 
+
     }
-    else { $this->devs10(); }
+    else { /* devs10 */ }
 }
 
 private function debounce() {
@@ -100,12 +105,20 @@ private function devsActual() : bool | string {
 	belg($l . "\n");
 
 	if (self::needPerms($l)) { return 'perm'; }
+	if ($nd = self::notDevice($l)) { return $nd; }
 
 	return true;
     }
 
     return false;
 } // func
+
+private static function notDevice(string $l) : string|true {
+    preg_match('/^\S+\s+(\S+)/', $l, $m);
+    $t10 = $m[1] ?? 'unknown dev res';
+    if ($t10 === 'device') return true;
+    return $t10;
+}
 
 private static function hideSerials(string $sin) : string {
     foreach(KWPhonesPRIVATE::list as $r) {

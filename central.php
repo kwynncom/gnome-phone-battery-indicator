@@ -96,11 +96,17 @@ class GrandCentralBattCl {
     }
 
     private function doLevelFromFile() {
+	$dis = self::doShCmd(shCmdCl::asbscmdConst);
+	if ($dis === 'Discharging') {
+	    belg($dis, true);
+	    $this->suppressLevel = true;
+	}
+
 	$res = adbBattCl::levFromPhFileStr(self::doShCmd(shCmdCl::asbccmdConst));
 	if ($res < 0) { 
 	    return $this->resetCF(false); 
 	} else {
-	    beout($res);
+	    if (!$this->suppressLevel) beout($res);
 	    $this->resetCF(true);
 	}
 
@@ -125,12 +131,14 @@ class GrandCentralBattCl {
 	if ($from === 'usb') $this->checkDevices();
 
 	if ($from === 'devices') {
-	    if ($type === 'perm') beout('need permission');
 	    belg('devices response is ' . $type);
-	    if ($type === 'found') $this->doLevelFromFile();
+	    if	    ($type === 'perm') beout('need permission');
+	    else if ($type === 'found') $this->doLevelFromFile();
+	    else beout('from devices: ' . $type);
 	}
 
 	if ($from === 'lines' && $type === 'batteryStatus') {
+	    belg('battStatus: ' . $dat);
 	    if ($dat === 3) $this->suppressLevel = true;
 	    else	    $this->suppressLevel = false;
 	}
