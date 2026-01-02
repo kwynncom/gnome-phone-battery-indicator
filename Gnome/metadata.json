@@ -1,0 +1,10 @@
+{
+  "name": "Cell Battery Display",
+  "description": "battery percentage at top right",
+  "uuid": "batt@kwynn.com",
+  "shell-version": [
+    "46"
+  ],
+  "version": 4,
+  "url": "https://github.com/yourname/top-panel-text"
+}
