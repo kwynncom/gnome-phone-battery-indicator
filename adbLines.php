@@ -3,7 +3,7 @@
 declare(strict_types=1);
 
 require_once('utils.php');
-require_once('adbLevel.php');
+require_once('adbBattery.php');
 
 class adbLinesCl {
 
@@ -105,13 +105,13 @@ class adbLinesCl {
     private function batteryFilt10($m) : ?int {
 	// if ($m[0] ?? false) belg('match = ' . $m[0]);
 	if (isset($m[1])) {
-	    $tlev = adbLevelCl::filt($m[1]);
+	    $tlev = adbBattCl::levFilt($m[1]);
 	    if ($tlev === false) return null;
 
 	    if ($this->noti ?? false) {
 		$this->noti->levelFromADBLog($tlev);
 	    }
-	    // belg('bfilt10 ' . $tlev);
+
 	    return $tlev;
 	}
 

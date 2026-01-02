@@ -1,9 +1,7 @@
 <?php
 
-// use React\EventLoop\Timer\TimerInterface;
 use React\EventLoop\Loop;
 
-require_once('adbLevel.php');
 require_once('/var/kwynn/batt/PRIVATEphones.php');
 require_once('adbWait.php');
 
@@ -39,7 +37,7 @@ public function setok() {
     $this->iatts = 0;
 }
 
-public function doit() {
+public function doitDev() {
     if (!$this->slowReinitLoop()) { 
 	$this->debounce(); 
     }

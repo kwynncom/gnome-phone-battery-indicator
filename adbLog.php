@@ -103,7 +103,3 @@ final class ADBLogReaderCl
 
     }
 }
-
-if (didCLICallMe(__FILE__)) {
-    new ADBLogReaderCl();
-}

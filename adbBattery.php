@@ -2,16 +2,16 @@
 
 require_once('utils.php');
 
-class adbLevelCl {
+class adbBattCl {
 
     public static function getLevelFromPhoneFileActual(mixed $s) : int {
-	$tlev = self::filt($s);
+	$tlev = self::levFilt($s);
 	if ($tlev === false) { return -1; }
 	$level = $tlev; unset($tlev);
 	return $level;
     }
 
-    public static function filt(mixed $res) : int | false {
+    public static function levFilt(mixed $res) : int | false {
 	try {
 	    kwas($res && is_string($res), 'bad res type');
 	    $res = trim($res);

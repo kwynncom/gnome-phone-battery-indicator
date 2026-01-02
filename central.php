@@ -5,7 +5,7 @@ use React\EventLoop\Loop;
 
 require_once('utils.php');
 require_once('shellCommands.php');
-require_once('adbLevel.php');
+require_once('adbBattery.php');
 require_once('adbLog.php');
 require_once('usb.php');
 require_once('adbLines.php');
@@ -54,7 +54,7 @@ class GrandCentralBattCl {
     }
 
     private function checkDevices() {
-	$this->adbdevo->doit();
+	$this->adbdevo->doitDev();
     }
 
     private function resetCF(bool $isGood) {
@@ -92,7 +92,7 @@ class GrandCentralBattCl {
     }
 
     private function doLevelFromFile() {
-	$res = adbLevelCl::getLevelFromPhoneFileActual(self::doShCmd(shCmdCl::asbccmdConst));
+	$res = adbBattCl::getLevelFromPhoneFileActual(self::doShCmd(shCmdCl::asbccmdConst));
 	if ($res < 0) { 
 	    return $this->resetCF(false); 
 	} else {
