@@ -4,12 +4,14 @@ require_once('utils.php');
 
 class adbBattCl {
 
-    public static function getLevelFromPhoneFileActual(mixed $s) : int {
+    public static function levFromPhFileStr(mixed $s) : int {
 	$tlev = self::levFilt($s);
 	if ($tlev === false) { return -1; }
 	$level = $tlev; unset($tlev);
 	return $level;
     }
+
+    
 
     public static function levFilt(mixed $res) : int | false {
 	try {

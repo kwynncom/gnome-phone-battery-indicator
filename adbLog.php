@@ -36,7 +36,15 @@ final class ADBLogReaderCl
 
     private function reinit(string $ev) {
 
+	$this->ckProcForTerm();
+
+	if (($this->cb->termed ?? false) || ($this->termed ?? false)) {
+	    if (!($this->termed ?? false)) $this->termed = true;
+	    $ev = 'marked termed from central';
+	}
+
 	belg('logcat r-einit event ' . $ev);
+
 
 	if ($ev === 'ext' && $this->isOpen) {
 	    belg('log cat ext reinit call, but open so happy and ignoring');
@@ -51,7 +59,7 @@ final class ADBLogReaderCl
 	    return;
 	}
 
-	if ($ev !== 'close') $this->init();
+	if ($ev !== 'close' && (!($this->termed ?? false))) $this->initReal();
     }
 
     private function setCmd() : string {
@@ -73,10 +81,36 @@ final class ADBLogReaderCl
 	$this->cb->adbLogLine($line);
     }
 
-    private function init() {
+    private mixed $process;
+
+    private function ckProcForTerm() {
+	if (!($this->process ?? false)) return;
+	$status = proc_get_status($this->process);
+	if (!$status) {
+	    belg('loccat proc status not set');
+	    return;
+	}
+	if ($status['running']) { 
+	    belg('logcat proc running');
+	    return;
+	}
+	if ($status['signaled'] && (!($this->termed ?? false))) {
+	    $this->termed = true;
+	    belg('logcat signaled');
+	}
+    }
+
+    private function dolcc() {
 	$this->setCmd();
  	belg($this->cmd);
-        kwas($this->inputStream = popen($this->cmd, 'r'), 'Cannot open stream: ' . $this->cmd);
+	$descriptors = [    1 => ['pipe', 'w'],   	];
+	$this->process = proc_open($this->cmd, $descriptors, $pipes);
+	$this->inputStream = $pipes[1];
+        kwas($this->inputStream, 'Cannot open stream: ' . $this->cmd);	
+    }
+
+    private function initReal() {
+	$this->dolcc();
   	$this->lines = new LineStream(new ReadableResourceStream($this->inputStream, $this->loop));
         $this->lines->on('data' , function (string $line)   { $this->doLine($line); });
 	$this->lines->on('close', function ()		    { $this->reinit('close');	    });
@@ -88,18 +122,21 @@ final class ADBLogReaderCl
     public function close(string $ev): void   
     { 
 	$this->isOpen = false;
-	belg($this->cmd ?? '(adbLog command not set yet) ' . ' closing event ' . $ev);
+	belg('logcat close: ' . ($this->cmd ?? '(adbLog command not set yet) ') . ' closing event ' . $ev);
 	if ($this->termed ?? false) {
 	    belg('logcat termed');
 	    return;
 	}
-	if ($ev === 'term') $this->termed = true;
+	if ($ev === 'term' && (!($this->termed ?? false))) $this->termed = true;
 	if (isset($this->lines)) {  $this->lines->close(); }
 	unset(    $this->lines);
 	if (isset($this->inputStream) && is_resource($this->inputStream) && 
 		   ($meta = @stream_get_meta_data($this->inputStream)) &&
-		   !empty($meta['stream_type'])) pclose($this->inputStream); 
+		   !empty($meta['stream_type'])) fclose($this->inputStream); 
 	unset(    $this->inputStream);
+
+	if ($this->process ?? false) proc_close($this->process);
+	$this->process = null;
 
     }
 }

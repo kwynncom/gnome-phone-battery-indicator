@@ -58,7 +58,11 @@ class GrandCentralBattCl {
     }
 
     private function resetCF(bool $isGood) {
+	if ($this->termed ?? false) $isGood = false;
 	if (!$isGood) beout('');
+
+	if ($this->termed ?? false) return;
+
 	belg('resetCF.  isGood = ' . ($isGood ? 'true' : 'false'));
 	$this->Ubf = 0;
 	$this->resetHeartBeat();
@@ -92,7 +96,7 @@ class GrandCentralBattCl {
     }
 
     private function doLevelFromFile() {
-	$res = adbBattCl::getLevelFromPhoneFileActual(self::doShCmd(shCmdCl::asbccmdConst));
+	$res = adbBattCl::levFromPhFileStr(self::doShCmd(shCmdCl::asbccmdConst));
 	if ($res < 0) { 
 	    return $this->resetCF(false); 
 	} else {
@@ -140,17 +144,18 @@ class GrandCentralBattCl {
 	pcntl_signal(SIGTERM, [$this, 'exit']);
     }
 
-    public function exit() {
+    public readonly bool $termed;
 
+    public function exit() {
+	$this->termed = true;
 	beout('');
 	belg('b3 e-xit called' . "\n");
 	if (isset($this->adbReader)) { $this->adbReader->close('term'); }
+	if (isset($this->usbo)) { $this->usbo->close(); }
 	$loop = Loop::get();
 	$loop->stop();
-	if (isset($this->usbo)) { $this->usbo->close(); }
-	PidFileGuard::release();
 	beout('');
-
+	PidFileGuard::release();
 	exit(0);
     }
 
