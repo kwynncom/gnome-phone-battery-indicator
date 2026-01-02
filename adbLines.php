@@ -75,9 +75,20 @@ class adbLinesCl {
 	return false;
     }
 
+    private function doWholeBattLine(string $s) {
+	preg_match('/ batteryStatus=(\d{1}),/', $s, $m);
+	$t10 = $m[1] ?? false; unset($m);
+	if (!$t10 || !is_numeric($t10)) return;
+	$t20i = intval($t10);
+	kwas($t20i >= 1 && $t20i <= 5, 'bad battery status value (err # 033083 )');
+	$this->noti->notify('lines', 'batteryStatus', $t20i);
+    }
+
     private function batteryLine(string $s) : ?int {
 
 	if (!self::batteryFilt05($s)) return null;
+
+	$this->doWholeBattLine($s);
 
 	preg_match('/level:(\d{1,3}),/', $s, $m);
 	$t56 = self::batteryFilt10($m);

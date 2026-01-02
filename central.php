@@ -74,6 +74,12 @@ class GrandCentralBattCl {
 	static $prev;
 	static $U = 0;
 
+	if ($this->suppressLevel) {
+	    beout('');
+	    belg('-');
+	    return;
+	}
+
 	$now = time();
 	if ($now - $this->Ubf < 5) return;
 
@@ -105,7 +111,7 @@ class GrandCentralBattCl {
 	$this->lineO->doLine($line);
     }
 
-    public function notify(string $from, string $type) {
+    public function notify(string $from, string $type, mixed $dat = null) {
 
 	if ($from === 'adblog' && $type === 'close') {
 	    belg('adblog close');
@@ -119,9 +125,14 @@ class GrandCentralBattCl {
 	    belg('devices response is ' . $type);
 	    if ($type === 'found') $this->doLevelFromFile();
 	}
+
+	if ($from === 'lines' && $type === 'batteryStatus') {
+	    if ($dat === 3) $this->suppressLevel = true;
+	    else	    $this->suppressLevel = false;
+	}
     }
 
-
+    private bool $suppressLevel = false;
 
     private function initSignals() {
 	pcntl_async_signals(true);
