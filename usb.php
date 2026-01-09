@@ -58,6 +58,7 @@ class usbMonitorCl {
     }
 
     public function close() {
+	belg('usb close()');
 	pclose($this->inputStream);
 	$this->lines->close();
     }

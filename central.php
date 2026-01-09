@@ -13,6 +13,10 @@ require_once('adbDevices.php');
 
 class GrandCentralBattCl {
 
+    private function beout() {
+	
+    }
+
     public function confirmedTimestamp() {
 	battLogCl::noop('.');
 	$this->resetHeartBeat();
@@ -159,7 +163,7 @@ class GrandCentralBattCl {
 	beout('');
 	belg('b3 e-xit called' . "\n");
 	if (isset($this->adbReader)) { $this->adbReader->close('term'); }
-	if (isset($this->usbo)) { $this->usbo->close(); }
+	if (isset($this->usbo)) { $this->usbo->close(); }  
 	$loop = Loop::get();
 	$loop->stop();
 	beout('');

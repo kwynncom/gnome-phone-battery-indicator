@@ -47,10 +47,17 @@ if (!isset($BEOUTO)) {
 
 function beout($s) {
     global $BEOUTO;
+    static $prev = 'unlikelyBlahblahblahrandomjunk';
 
-    $BEOUTO->put($s, true);
-    $c = 'busctl --user emit /kwynn/batt com.kwynn IamArbitraryNameButNeeded s ' . '"' . $s . '"';
-    shell_exec($c);
+    if ($s === $prev) { $emit = false;     }
+    else	      { $emit = true ;     }
+
+    $BEOUTO->put($s, $emit);
+    if ($emit) {
+	$prev = $s;
+	$c = 'busctl --user emit /kwynn/batt com.kwynn IamArbitraryNameButNeeded s ' . '"' . $s . '"';
+	shell_exec($c);
+    }
 }
 
 function belg(string $s, bool $star = false) {
