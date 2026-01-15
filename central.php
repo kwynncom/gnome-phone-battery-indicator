@@ -137,7 +137,10 @@ class GrandCentralBattCl {
 	    belg('devices response is ' . $type);
 	    if	    ($type === 'perm') beout('need permission');
 	    else if ($type === 'found') $this->doLevelFromFile();
-	    else beout('from devices: ' . $type);
+	    else {
+		// belg or beout?  2026/01/15 - belg seems preferable
+		belg('from devices: ' . $type);
+	    }
 	}
 
 	if ($from === 'lines' && $type === 'batteryStatus') {
