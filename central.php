@@ -5,6 +5,7 @@ use React\EventLoop\Loop;
 
 require_once('utils.php');
 require_once('shellCommands.php');
+require_once('avahi.php');
 require_once('adbBattery.php');
 require_once('adbLog.php');
 require_once('usb.php');
@@ -41,11 +42,13 @@ class GrandCentralBattCl {
     public  readonly object $shcmo;
     private	     int    $Ubf = 0;
     private readonly object $adbdevo;
+    private readonly object $avahio;
 
     
     public function __construct() {
 	beout('');
 	$this->shcmo = new shCmdCl();
+	$this->avahio = new avahiMonitorADBCl($this);
 	$this->adbdevo = new adbDevicesCl($this);
 	$this->adbReader = new ADBLogReaderCl($this);
 	$this->resetCF(false);
@@ -132,7 +135,7 @@ class GrandCentralBattCl {
 	    $this->resetCF(false);
 	}
 
-	if ($from === 'usb') $this->checkDevices();
+	if ($from === 'usb' || $from === 'avahi') $this->checkDevices();
 
 	if ($from === 'devices') {
 	    belg('devices response is ' . $type);
@@ -162,6 +165,7 @@ class GrandCentralBattCl {
 	$this->termed = true;
 	beout('');
 	belg('b3 e-xit called' . "\n");
+	if (isset($this->avahio)) { $this->avahio->close(); }
 	if (isset($this->adbReader)) { $this->adbReader->close('term'); }
 	if (isset($this->usbo)) { $this->usbo->close(); }  
 	$loop = Loop::get();

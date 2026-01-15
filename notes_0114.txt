@@ -1,0 +1,15 @@
+# non-term / monitoring without -t
+avahi-browse -r _adb-tls-connect._tcp
+
+# the important output
+   port = [38249]
+
+
+# more structured
+avahi-browse --terminate --resolve --parsable --no-db-lookup _adb-tls-connect._tcp
++;enp3s0;IPv6;adb-serial-2kwk7R;_adb-tls-connect._tcp;local
++;enp3s0;IPv4;adb-serial-2kwk7R;_adb-tls-connect._tcp;local
+=;enp3s0;IPv6;adb-serial-2kwk7R;_adb-tls-connect._tcp;local;Android.local;192.168.1.143;38249;"v=ADB_SECURE_SERVICE_VERSION"
+=;enp3s0;IPv4;adb-serial-2kwk7R;_adb-tls-connect._tcp;local;Android.local;192.168.1.143;38249;"v=ADB_SECURE_SERVICE_VERSION"
+
+

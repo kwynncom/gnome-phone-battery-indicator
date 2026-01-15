@@ -1,4 +1,5 @@
-import St from 'gi://St'; // Am I hard-linked? 03:12am - see at bottom
+// head ~/.local/share/gnome-shell/extensions/batt@kwynn.com/extension.js
+import St from 'gi://St'; // Am I hard-linked? 12:06
 import Gio from 'gi://Gio';
 import { Extension } from 'resource:///org/gnome/shell/extensions/extension.js';
 import * as Main from 'resource:///org/gnome/shell/ui/main.js';
@@ -15,7 +16,7 @@ export default class Battery extends Extension {
         Main.panel._rightBox.insert_child_at_index(this.label, 1);
 
         Gio.DBus.session.signal_subscribe(
-            null, null, null, '/kwynn/batt', null, 0,
+            null, null, null, '/kwynn/batt/gnome/topright', null, 0,
             (c, s, p, i, sig, params) => {
                 if (params?.n_children()) {
                     const v = params.get_child_value(0);
@@ -27,6 +28,3 @@ export default class Battery extends Extension {
     }
     disable() { this.label?.destroy(); }
 }
-/* Note: As of 2026/01/02, 0300 or so, I haven't changed the functionality in 2 weeks+.  I'm changing versions and timestamps in the 
- * code to make sure my hard links are working. 
- */

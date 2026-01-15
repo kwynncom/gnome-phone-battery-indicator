@@ -55,7 +55,7 @@ function beout($s) {
     $BEOUTO->put($s, $emit);
     if ($emit) {
 	$prev = $s;
-	$c = 'busctl --user emit /kwynn/batt com.kwynn IamArbitraryNameButNeeded s ' . '"' . $s . '"';
+	$c = 'busctl --user emit /kwynn/batt/gnome/topright com.kwynn ignoreMe s ' . '"' . $s . '"';
 	shell_exec($c);
     }
 }
