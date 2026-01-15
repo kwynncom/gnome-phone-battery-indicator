@@ -1,0 +1,35 @@
+1 04:52:33 2026-01-15
+1 04:52:33 ********* (blanking)
+3 04:52:33 ********* avahi-browse -r _adb-tls-connect._tcp
+4 04:52:33 (blanking)
+5 04:52:33 resetCF.  isGood = false
+6 04:52:33 devs10()
+7 04:52:33 ********* adb devices 2>&1
+8 04:52:33 Android.local:35083	device
+9 04:52:33 devices response is found
+10 04:52:33 ********* adb shell cat /sys/class/power_supply/battery/status 2>&1
+11 04:52:33 ********* adb shell cat /sys/class/power_supply/battery/capacity 2>&1
+12 04:52:33 ********* 55
+13 04:52:33 resetCF.  isGood = true
+14 04:52:33 logcat ckProcForTerm already no process or unset
+15 04:52:33 logcat r-einit event ext
+16 04:52:33 logcat close: (adbLog command not set yet)  closing event closing
+17 04:52:33 adb logcat 2>&1
+18 04:52:33 ********* udevadm monitor -s usb 2>&1
+19 04:52:33 l-susb took 0.013s
+20 04:52:33 ********* found wireless USB port 35083
+21 04:52:33 ********* adb connect Android.local: result already connected to Android.local:35083
+22 04:52:33 usb started monitoring
+23 04:52:33 devs10()
+24 04:52:33 ********* adb devices 2>&1
+25 04:52:33 Android.local:35083	device
+26 04:52:33 devices response is found
+27 04:52:33 ********* adb shell cat /sys/class/power_supply/battery/status 2>&1
+28 04:52:33 ********* adb shell cat /sys/class/power_supply/battery/capacity 2>&1
+29 04:52:33 55
+30 04:52:33 resetCF.  isGood = true
+31 04:52:33 logcat proc running
+32 04:52:33 logcat r-einit event ext
+33 04:52:33 log cat ext reinit call, but open so happy and ignoring
+34 04:52:33 logcat: --------- beginning of main
+35 04:52:33 .7....42..2

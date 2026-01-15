@@ -39,11 +39,13 @@ class avahiMonitorADBCl {
 	
     }
 
+    const cmp = 'connected to ';
+
     private function conn(int $p) {
 	$res = trim(shell_exec(self::cmdc . $p));
 	belg(self::cmdc . ' result ' . $res, true);
-	if ($res) return;
-	$this->noto('avahi', 'port found');
+	if (substr($res, 0, strlen(self::cmp)) !== self::cmp) return;
+	$this->noto->notify('avahi', 'port found');
 	
 	
     }
