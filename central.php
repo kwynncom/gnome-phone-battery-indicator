@@ -14,10 +14,6 @@ require_once('adbDevices.php');
 
 class GrandCentralBattCl {
 
-    private function beout() {
-	
-    }
-
     public function confirmedTimestamp() {
 	battLogCl::noop('.');
 	$this->resetHeartBeat();
