@@ -43,6 +43,7 @@ class GrandCentralBattCl {
     
     public function __construct() {
 	beout('');
+	battKillCl::killPrev();
 	$this->shcmo = new shCmdCl();
 	$this->avahio = new avahiMonitorADBCl($this);
 	$this->adbdevo = new adbDevicesCl($this);
@@ -52,7 +53,6 @@ class GrandCentralBattCl {
 	$this->initHeartBeat();
 	$this->usbo = new usbMonitorCl($this);
 	$this->initSignals();
-	battKillCl::killPrev();
 	Loop::run();
     }
 
@@ -165,12 +165,20 @@ class GrandCentralBattCl {
 	beout('');
 	belg('b3 e-xit called' . "\n");
 	if (isset($this->avahio)) { $this->avahio->close(); }
-	if (isset($this->adbReader)) { $this->adbReader->close('term'); }
+	belg('k-illing adbReader');
+	if (isset($this->adbReader)) { 
+	    $this->adbReader->close('term'); 
+	}
+	belg('k-illing usb (from central) - start');
 	if (isset($this->usbo)) { $this->usbo->close(); }  
+	belg('k-illing usb (from central) - end');
 	$loop = Loop::get();
 	$loop->stop();
 	beout('');
+	belg('before lock release');
 	PidFileGuard::release();
+	belg('after lock release');
+	belg('about to exit');
 	exit(0);
     }
 

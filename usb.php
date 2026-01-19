@@ -14,9 +14,10 @@ class usbMonitorCl {
 
     const cmd = 'udevadm monitor -s usb 2>&1';
 
-    private readonly object $lines;
+    private	     object $lines;
     private readonly object $loop;
-    private readonly mixed  $inputStream;
+    private mixed  $inputStream;
+    private mixed $process;
 
     private readonly object $noti;
 
@@ -49,18 +50,59 @@ class usbMonitorCl {
     }
 
     private function init() {
+	belg(self::cmd);
+	$descriptors = [    1 => ['pipe', 'w'],   	];
+	$this->process = proc_open(self::cmd, $descriptors, $pipes);
+	$this->inputStream = $pipes[1];
+        kwas($this->inputStream, 'Cannot open stream: ' . self::cmd);	
+
 	$this->loop = Loop::get();
-	belg(self::cmd, true);
-        kwas($this->inputStream = popen(self::cmd, 'r'), 'Cannot open stream: ' . self::cmd);
-        $resourceStream = new ReadableResourceStream($this->inputStream, $this->loop);
-	$this->lines = new LineStream($resourceStream);
-        $this->lines->on('data' , function (string $line) { $this->checkDat($line); });
+  	$this->lines = new LineStream(new ReadableResourceStream($this->inputStream, $this->loop));
+        $this->lines->on('data' , function (string $line)   { $this->checkDat($line); });
     }
 
     public function close() {
-	belg('usb close()');
-	pclose($this->inputStream);
-	$this->lines->close();
+	belg('avahi close: ' . self::cmd . ' closing event ');
+
+	if (isset($this->lines)) {  $this->lines->close(); }
+	unset(    $this->lines);
+	if (isset($this->inputStream) && is_resource($this->inputStream) && 
+		   ($meta = @stream_get_meta_data($this->inputStream)) &&
+		   !empty($meta['stream_type'])) fclose($this->inputStream); 
+	unset(    $this->inputStream);
+
+
+	proc_terminate	    ($this->process, SIGTERM);
+	
+	if (false) {
+	    sleep(1);
+	    if (proc_get_status ($this->process)['running']) {
+		proc_terminate  ($this->process, SIGKILL);
+	    }
+	}
+
+
+	$this->safeProcessCl();
+	$this->process = null;
+	belg('avahi close: ' . self::cmd . ' closing event ');
+
+    }
+
+    private function safeProcessCl() {
+	if (isset($this->process) && is_resource($this->process)) {
+	    $status = proc_get_status($this->process);
+
+	    // Optional: only call proc_close() if the process is still actually running
+	    if ($status['running']) {
+		proc_close($this->process);
+	    } else {
+		// Process already exited → calling proc_close() is safe but usually returns -1
+		proc_close($this->process);
+	    }
+
+	    // Important: prevent accidental double-close attempts later
+	    $this->process = null;   // or unset($this->process);
+	}
     }
 
     private static function lsusb() : bool {

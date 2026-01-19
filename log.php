@@ -67,7 +67,7 @@ class battLogCl {
 	kwas(touch($f), "cannot create / touch $f");
 	kwas(chmod($f, 0600), "cannot chmod $f");
 	self::$logf = $f;
-	self::put(date('Y-m-d'));
+	self::put(date('Y-m-d') . ' PID ' . getmypid());
     }
 
     public static function noop(string $out = '?') {

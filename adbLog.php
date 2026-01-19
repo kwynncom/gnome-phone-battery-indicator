@@ -16,6 +16,7 @@ final class ADBLogReaderCl
     private	     object $lines;
     private readonly object $loop;
     private mixed  $inputStream;
+    private mixed $process;
 
     private readonly mixed $cb;
     private readonly bool  $termed;
@@ -81,7 +82,7 @@ final class ADBLogReaderCl
 	$this->cb->adbLogLine($line);
     }
 
-    private mixed $process;
+
 
     private function ckProcForTerm() {
 	if (!($this->process ?? false)) {
@@ -140,8 +141,26 @@ final class ADBLogReaderCl
 		   !empty($meta['stream_type'])) fclose($this->inputStream); 
 	unset(    $this->inputStream);
 
-	if ($this->process ?? false) proc_close($this->process);
+	if (isset($this->process)) {	proc_terminate	    ($this->process, SIGTERM); }
+	$this->safeProcessCl();
 	$this->process = null;
 
+    }
+
+    private function safeProcessCl() {
+	if (isset($this->process) && is_resource($this->process)) {
+	    $status = proc_get_status($this->process);
+
+	    // Optional: only call proc_close() if the process is still actually running
+	    if ($status['running']) {
+		proc_close($this->process);
+	    } else {
+		// Process already exited → calling proc_close() is safe but usually returns -1
+		proc_close($this->process);
+	    }
+
+	    // Important: prevent accidental double-close attempts later
+	    $this->process = null;   // or unset($this->process);
+	}
     }
 }

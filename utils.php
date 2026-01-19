@@ -3,8 +3,9 @@
 declare(strict_types=1);
 
 require_once('/opt/kwynn/kwutils.php');
-require_once('kill.php');
 require_once('log.php');
+require_once('kill.php');
+
 
 function beout(string | int $s) {
     

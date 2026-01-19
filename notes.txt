@@ -1,0 +1,29 @@
+When I run "avahi-browse -r _adb-tls-connect._tcp" with PHP proc_open, I am having trouble getting it to close.  Ideas? 
+
+
+*******
+2026/01/19 11:07am
+
+change avahi to proc_open like adbLog
+
+***********
+Similarly, I'm having locking problems.  My intention is to have the previous process stop when I run a new process.  
+The lock file is not necessarily releasing, though.  How 'bout I use inotify to track a PID file?  Is that a common technique?  It's fine if the previous process gracefully stops itself.  I don't need a proverbial hammer on it.
+
+************
+I'm running the longer-term process just with nohup and &.  I'll leave that way for now.  Would you write a class in a file for this?  I want a 
+
+SIGTERM and SIGKILL sound fine.  That sounds more definite than 
+
+**********
+
+	if (isset($this->inputStream) && $this->inputStream && is_resource($this->inputStream) 
+	 &&    ($meta = @stream_get_meta_data($this->inputStream)) &&
+		   !empty($meta['stream_type'])) {
+	    $status = proc_get_status($this->inputStream);
+
+Uncaught TypeError: proc_get_status(): supplied resource is not a valid process resource in /home/k/batt/avahi.php
+
+Line 61 is $status = proc_get_status($this->inputStream);
+
+What more can I do?

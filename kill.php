@@ -26,7 +26,7 @@ final class PidFileGuard
             if ($oldPid > 1 && posix_kill($oldPid, 0)) {
                 self::killProcess($oldPid, $forceKill);
             } else {
-                echo "Old PID $oldPid is dead, but lock held by stale processes. Finding holders...\n";
+                belg("Old PID $oldPid is dead, but lock held by stale processes. Finding holders...\n");
                 exec('fuser ' . escapeshellarg($pidFile) . ' 2>/dev/null', $output);
                 $holders = [];
                 foreach ($output as $line) {
@@ -40,19 +40,21 @@ final class PidFileGuard
                 $myPid = getmypid();
                 foreach ($holders as $hPid) {
                     if ($hPid === $myPid || !posix_kill($hPid, 0)) continue;
-                    echo "Killing stale holder PID $hPid ...\n";
+                    belg("Killing stale holder PID $hPid ...\n");
                     posix_kill($hPid, SIGTERM);
                     $waitStart = microtime(true);
                     while (microtime(true) - $waitStart < 5 && posix_kill($hPid, 0)) {
                         usleep(200000);
                     }
                     if (posix_kill($hPid, 0) && $forceKill) {
-                        echo "Force killing stale holder PID $hPid ...\n";
+                        belg("Force killing stale holder PID $hPid ...\n");
                         posix_kill($hPid, SIGKILL);
                     }
                 }
                 usleep(500000);
             }
+
+	    sleep(2); // Kwynn 2026/01/19 11:28
 
             if (!flock($fp, LOCK_EX | LOCK_NB)) {
                 fclose($fp);
@@ -75,14 +77,14 @@ final class PidFileGuard
         if ($pid <= 1 || !posix_kill($pid, 0)) {
             return;
         }
-        echo "Killing instance PID $pid ...\n";
+        belg("Killing instance PID $pid ...\n");
         posix_kill($pid, SIGTERM);
         $waitStart = microtime(true);
         while (microtime(true) - $waitStart < 5 && posix_kill($pid, 0)) {
             usleep(200000);
         }
         if (posix_kill($pid, 0) && $forceKill) {
-            echo "Force killing PID $pid ...\n";
+            belg("Force killing PID $pid ...\n");
             posix_kill($pid, SIGKILL);
         }
     }
