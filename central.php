@@ -11,7 +11,7 @@ require_once('adbLog.php');
 require_once('usb.php');
 require_once('adbLinesBatt.php');
 require_once('adbDevices.php');
-require_once('adbLinesOther.php');
+require_once('brightness.php');
 
 class GrandCentralBattCl {
 
@@ -34,7 +34,7 @@ class GrandCentralBattCl {
     }
    
     private readonly object $lineOBatt;
-    private readonly object $lineOOther;
+    private readonly object $lineOBright;
     private readonly object $adbReader;
     private readonly object $usbo;
     public  readonly object $shcmo;
@@ -52,7 +52,7 @@ class GrandCentralBattCl {
 	$this->adbReader = new ADBLogReaderCl($this);
 	$this->resetCF(false);
 	$this->lineOBatt = new adbLinesCl($this);
-	$this->lineOOther = new adbLinesOtherCl($this);
+	$this->lineOBright = new brightnessCl();
 	$this->initHeartBeat();
 	$this->usbo = new usbMonitorCl($this);
 	$this->initSignals();
@@ -125,17 +125,10 @@ class GrandCentralBattCl {
 	$this->setHeartBeatN();
 	if (preg_match('/^error: /', $line)) { belg($line);    }
 	$this->lineOBatt->doLine($line);
-	$this->lineOOther->put($line);
+	$this->lineOBright->put($line);
     }
 
-    private string $brstat = 'unchanged';
-
     public function notify(string $from, string $type, mixed $dat = null) {
-
-	if ($from === 'lines' && $type === 'still') {
-	    if ($this->brstat !== 'changed') $this->shcmo->brightness();
-	    $this->brstat = 'changed';
-	}
 
 	if ($from === 'adblog' && $type === 'close') {
 	    belg('adblog close');

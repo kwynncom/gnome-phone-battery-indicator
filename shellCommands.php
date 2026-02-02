@@ -15,7 +15,12 @@ class shCmdCl {
 	}
     }
 
-    public function brightness(int $bright = 1) {
+    public static function brightness(int $bright = 1) {
+	$o = new self();
+	$o->brightnessI($bright);
+    }
+
+    private function brightnessI(int $bright) {
 	$c  = '';
 	$c .= $this->adbPrefix();
 	$c .= 'shell settings put system screen_brightness ' . $bright . ' 2>&1 ';

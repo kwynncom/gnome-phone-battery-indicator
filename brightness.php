@@ -1,17 +1,12 @@
 <?php
 
-class adbLinesOtherCl {
+class brightnessCl {
 
     const zthresh = 9.7;
-
-    private readonly object $noto;
-
-    public function __construct(object $noto) {
-	 $this->noto = $noto;
-    }
-
-
     const key = 'Accelerometer: x:y:z=';
+    const defaultBright = 2;
+
+    private string $status = 'unchanged';
 
     private function check(string $line, int $offset) {
 
@@ -29,7 +24,10 @@ class adbLinesOtherCl {
 
 	// belg('accel notify');
 
-	$this->noto->notify('lines', 'still');
+	if ($this->status !== 'changed') {
+	    shCmdCl::brightness(self::defaultBright);
+	    $this->status = 'changed';
+	}
 	
     }
 
