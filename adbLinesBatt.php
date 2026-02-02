@@ -51,8 +51,8 @@ class adbLinesCl {
 
 
     private function checkLastTS(string $line) : bool | null {
-	$tsr = self::checkLineTimestamp($line);
-	if ($tsr === true) return null;
+	$tsr = adbLineTSDiff($line);
+	if ($tsr === null) return null;
 	if ($tsr > 3) return false;
         $this->noti->confirmedTimestamp();
         return true;
@@ -61,8 +61,8 @@ class adbLinesCl {
 
     private static function bf13(string $s) : bool {
 	if (strpos($s, ' D BatteryService: Processing new values: ') === false) return false;
-	$d = self::checkLineTimestamp($s);
-	if ($d === true) return true;
+	$d = adbLineTSDiff($s);
+	if ($d === null) return true;
 	if ($d > 5) return false;
 	else return true;
     }
@@ -117,28 +117,6 @@ class adbLinesCl {
 
 	return null;
     }
-
-
-
-    private static function checkLineTimestamp(string $line): true|float
-    {
-	if (preg_match('/^(\d{2}-\d{2} \d{2}:\d{2}:\d{2}\.\d{3})/', $line, $matches)) {
-	    $timestampPart = $matches[1];
-	    $currentYear = date('Y');
-	    $fullDateStr = $currentYear . '-' . $timestampPart;
-	    $dt = DateTime::createFromFormat('Y-m-d H:i:s.v', $fullDateStr);
-
-	    if ($dt === false) { return true;    }
-
-	    $now = new DateTime('now');
-	    $diffInSeconds = $now->format('U.u') - $dt->format('U.u');
-
-	    return $diffInSeconds;
-	}
-
-	return true;
-    }
-
 
 }
 

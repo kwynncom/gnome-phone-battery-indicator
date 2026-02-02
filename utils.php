@@ -40,3 +40,22 @@ class battKillCl {
 	PidFileGuard::acquire(self::lockf);
     }
 }
+
+function adbLineTSDiff(string $line): null | float
+{
+    if (preg_match('/^(\d{2}-\d{2} \d{2}:\d{2}:\d{2}\.\d{3})/', $line, $matches)) {
+	$timestampPart = $matches[1];
+	$currentYear = date('Y');
+	$fullDateStr = $currentYear . '-' . $timestampPart;
+	$dt = DateTime::createFromFormat('Y-m-d H:i:s.v', $fullDateStr);
+
+	if ($dt === false) { return null;    }
+
+	$now = new DateTime('now');
+	$diffInSeconds = $now->format('U.u') - $dt->format('U.u');
+
+	return $diffInSeconds;
+    }
+
+    return null;
+}

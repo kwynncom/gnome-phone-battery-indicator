@@ -9,8 +9,9 @@ require_once('avahi.php');
 require_once('adbBattery.php');
 require_once('adbLog.php');
 require_once('usb.php');
-require_once('adbLines.php');
+require_once('adbLinesBatt.php');
 require_once('adbDevices.php');
+require_once('adbLinesOther.php');
 
 class GrandCentralBattCl {
 
@@ -32,7 +33,8 @@ class GrandCentralBattCl {
 	});
     }
    
-    private readonly object $lineO;
+    private readonly object $lineOBatt;
+    private readonly object $lineOOther;
     private readonly object $adbReader;
     private readonly object $usbo;
     public  readonly object $shcmo;
@@ -49,7 +51,8 @@ class GrandCentralBattCl {
 	$this->adbdevo = new adbDevicesCl($this);
 	$this->adbReader = new ADBLogReaderCl($this);
 	$this->resetCF(false);
-	$this->lineO = new adbLinesCl($this);
+	$this->lineOBatt = new adbLinesCl($this);
+	$this->lineOOther = new adbLinesOtherCl($this);
 	$this->initHeartBeat();
 	$this->usbo = new usbMonitorCl($this);
 	$this->initSignals();
@@ -121,10 +124,18 @@ class GrandCentralBattCl {
     public function adbLogLine(string $line) {
 	$this->setHeartBeatN();
 	if (preg_match('/^error: /', $line)) { belg($line);    }
-	$this->lineO->doLine($line);
+	$this->lineOBatt->doLine($line);
+	$this->lineOOther->put($line);
     }
 
+    private string $brstat = 'unchanged';
+
     public function notify(string $from, string $type, mixed $dat = null) {
+
+	if ($from === 'lines' && $type === 'still') {
+	    if ($this->brstat !== 'changed') $this->shcmo->brightness();
+	    $this->brstat = 'changed';
+	}
 
 	if ($from === 'adblog' && $type === 'close') {
 	    belg('adblog close');
@@ -144,7 +155,7 @@ class GrandCentralBattCl {
 	}
 
 	if ($from === 'lines' && $type === 'batteryStatus') {
-	    belg('battStatus: ' . $dat);
+	    // belg('battStatus: ' . $dat);
 	    if ($dat === 3) $this->suppressLevel = true;
 	    else	    $this->suppressLevel = false;
 	}

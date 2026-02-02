@@ -15,6 +15,14 @@ class shCmdCl {
 	}
     }
 
+    public function brightness(int $bright = 1) {
+	$c  = '';
+	$c .= $this->adbPrefix();
+	$c .= 'shell settings put system screen_brightness ' . $bright . ' 2>&1 ';
+	belg("$c\n", true);
+	shell_exec($c);
+    }
+
     private function asbs() : string {
 	return trim($this->pbfcInternal('status'));
     }
