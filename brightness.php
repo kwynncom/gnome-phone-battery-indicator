@@ -22,12 +22,11 @@ class brightnessCl {
 
 	if ($i < 2) return; 
 
-	// belg('accel notify');
+	if ($this->status === 'changed') return;
 
-	if ($this->status !== 'changed') {
-	    shCmdCl::brightness(self::defaultBright);
-	    $this->status = 'changed';
-	}
+        shCmdCl::brightness(self::defaultBright);
+        $this->status = 'changed';
+
 	
     }
 

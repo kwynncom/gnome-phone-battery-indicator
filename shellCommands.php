@@ -15,7 +15,7 @@ class shCmdCl {
 	}
     }
 
-    public static function brightness(int $bright = 1) {
+    public static function brightness(int $bright) {
 	$o = new self();
 	$o->brightnessI($bright);
     }

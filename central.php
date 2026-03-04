@@ -84,21 +84,26 @@ class GrandCentralBattCl {
 	static $prev;
 	static $U = 0;
 
+	$now = time();
+
 	if ($this->suppressLevel) {
 	    beout('');
+	    $prev = '';
+	    $U = $now;
 	    belg('-');
 	    return;
 	}
 
-	$now = time();
-	if ($now - $this->Ubf < 5) return;
+	belg('+');
+
+	if (($lev === $prev) && ($now - $this->Ubf < 5)) return;
 
 	if (($lev !== $prev) || ($now - $U > 30)) {
 	    beout($lev);
+	    $prev = $lev;
 	    $U = $now;
 	}
-	else belg('+');
-	$prev = $lev;
+
     }
 
     private function doLevelFromFile() {
@@ -142,7 +147,6 @@ class GrandCentralBattCl {
 	    if	    ($type === 'perm') beout('need permission');
 	    else if ($type === 'found') $this->doLevelFromFile();
 	    else {
-		// belg or beout?  2026/01/15 - belg seems preferable
 		belg('from devices: ' . $type);
 	    }
 	}
