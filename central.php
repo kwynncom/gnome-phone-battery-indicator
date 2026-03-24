@@ -140,6 +140,12 @@ class GrandCentralBattCl {
 	    $this->resetCF(false);
 	}
 
+	if ($from === 'adblog' && $type === 'happy') {
+	    if (time() - $this->Ubf < 5) {
+		$this->doLevelFromFile();
+	    }
+	}
+
 	if ($from === 'usb' || $from === 'avahi') $this->checkDevices();
 
 	if ($from === 'devices') {

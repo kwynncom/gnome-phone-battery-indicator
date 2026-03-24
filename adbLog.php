@@ -35,6 +35,10 @@ final class ADBLogReaderCl
     public function __destruct() { $this->close('destructor'); }
 
 
+    private function happy() {
+	$this->cb->notify('adblog', 'happy');
+    }
+    
     private function reinit(string $ev) {
 
 	$this->ckProcForTerm();
@@ -49,6 +53,7 @@ final class ADBLogReaderCl
 
 	if ($ev === 'ext' && $this->isOpen) {
 	    belg('log cat ext reinit call, but open so happy and ignoring');
+	    $this->happy();
 	    return;
 	}
 
@@ -72,11 +77,17 @@ final class ADBLogReaderCl
 	return $c;
     }
 
-    const ils = ['- waiting for device -', '--------- beginning of main' ];
+    const ils = ['- waiting for device -', 
+		 '--------- beginning of main', 
+		 '--------- beginning of system' ];
 
     private function doLine(string $line) {
-	foreach(self::ils as $cl) {
-	    if (strpos($line, $cl) !== false) belg('logcat: ' . $cl);
+	foreach(self::ils as $i => $cl) {
+	    if (strpos($line, $cl) !== false) {
+		belg('logcat: ' . $cl);
+		if ($i === 0) return;
+		if ($i === 1 && $i === 2) $this->happy();
+	    }
 	}
 
 	$this->cb->adbLogLine($line);
