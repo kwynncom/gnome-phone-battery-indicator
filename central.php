@@ -1,6 +1,5 @@
-<?php
+<?php declare(strict_types=1);
 
-declare(strict_types=1);
 use React\EventLoop\Loop;
 
 require_once('utils.php');
@@ -46,13 +45,13 @@ class GrandCentralBattCl {
     public function __construct() {
 	beout('');
 	battKillCl::killPrev();
-	$this->shcmo = new shCmdCl();
-	$this->avahio = new avahiMonitorADBCl($this);
 	$this->adbdevo = new adbDevicesCl($this);
+	$this->shcmo = new shCmdCl($this->adbdevo);
+	$this->avahio = new avahiMonitorADBCl($this); // devo below here
 	$this->adbReader = new ADBLogReaderCl($this);
 	$this->resetCF(false);
 	$this->lineOBatt = new adbLinesCl($this);
-	$this->lineOBright = new brightnessCl();
+	$this->lineOBright = new brightnessCl($this->shcmo);
 	$this->initHeartBeat();
 	$this->usbo = new usbMonitorCl($this);
 	$this->initSignals();
@@ -141,7 +140,7 @@ class GrandCentralBattCl {
 	}
 
 	if ($from === 'adblog' && $type === 'happy') {
-	    if (time() - $this->Ubf < 5) {
+	    if ((time() - $this->Ubf) < 1) {
 		$this->doLevelFromFile();
 	    }
 	}

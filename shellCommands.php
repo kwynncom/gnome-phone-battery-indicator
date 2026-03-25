@@ -1,10 +1,17 @@
-<?php
+<?php declare(strict_types=1);
 
 class shCmdCl {
 
     const advicmdConst = 'advi';
     const asbccmdConst = 'asbc';
     const asbscmdConst = 'asbs';
+
+    private readonly object $devo;
+
+    public function __construct(object $devo) {
+	$this->devo = $devo; unset($devo);
+
+    }
 
     public function dosh(string $which) : mixed {
 	switch($which) {
@@ -15,12 +22,7 @@ class shCmdCl {
 	}
     }
 
-    public static function brightness(int $bright) {
-	$o = new self();
-	$o->brightnessI($bright);
-    }
-
-    private function brightnessI(int $bright) {
+    private function brightness(int $bright) {
 	$c  = '';
 	$c .= $this->adbPrefix();
 	$c .= 'shell settings put system screen_brightness ' . $bright . ' 2>&1 ';
@@ -52,6 +54,9 @@ class shCmdCl {
 	$t  = '';
 	$t .= 'adb';
 	$t .= ' ';
+
+	$t .= $this->devo->thedevice ? (' -s ' . $this->devo->thedevice . ' ' ) : '';
+
 	return $t;
     }
 

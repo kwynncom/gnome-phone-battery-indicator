@@ -8,6 +8,12 @@ class brightnessCl {
 
     private string $status = 'unchanged';
 
+    private  readonly object $shello;
+
+    public function __construct(object $shello) {
+	$this->shello = $shello; 
+    }
+
     private function check(string $line, int $offset) {
 
 	static $i = 0;
@@ -24,7 +30,7 @@ class brightnessCl {
 
 	if ($this->status === 'changed') return;
 
-        shCmdCl::brightness(self::defaultBright);
+       $this->shello->brightness(self::defaultBright);
         $this->status = 'changed';
 
 	

@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 use React\EventLoop\Loop;
 
@@ -71,7 +71,7 @@ private function devs10() {
 
     belg('devs10()');
 
-    $ret = $this->devsActual();
+    $ret = $this->devicesActual();
     $send = 'unkdev';
 
     if (is_string($ret)) $send = $ret;
@@ -84,14 +84,18 @@ private function devs10() {
     $this->cento->notify('devices', $send);
 }
 
-private function devsActual() : bool | string {
+public string $thedevice = '';
+
+private function devicesActual() : bool | string {
+
+    $this->thedevice = '';
 
     $s = $this->cento->doShCmd(self::cmd);
 
     $a = explode("\n", $s); unset($s);
 
     $dline = false;
-
+ 
     foreach($a as $rawl) {
 	$l = trim($rawl); unset($rawl);
 	if ((!$dline) && ($l === 'List of devices attached')) {
@@ -105,7 +109,7 @@ private function devsActual() : bool | string {
 	belg($l . "\n");
 
 	if (self::needPerms($l)) { return 'perm'; }
-	if ($nd = self::notDevice($l)) { return $nd; }
+	if ($nd = $this->notDevice($l)) { return $nd; }
 
 	return true;
     }
@@ -113,10 +117,13 @@ private function devsActual() : bool | string {
     return false;
 } // func
 
-private static function notDevice(string $l) : string|true {
-    preg_match('/^\S+\s+(\S+)/', $l, $m);
-    $t10 = $m[1] ?? 'unknown dev res';
-    if ($t10 === 'device') return true;
+private function notDevice(string $l) : string|true {
+    preg_match('/^(\S+)\s+(\S+)/', $l, $m);
+    $t10 = $m[2] ?? 'unknown dev res';
+    if ($t10 === 'device') {
+	$this->thedevice = $m[1];
+	return true;
+    }
     return $t10;
 }
 
