@@ -26,8 +26,8 @@ class GrandCentralBattCl {
     private function setHeartBeatN() { $this->hbi++;    }
 
     private function initHeartBeat() {
-	Loop::addPeriodicTimer(0.8, function ()  {
-	    if (!$this->Ubf || !$this->adbReader->isOpen()) { $this->resetHeartBeat(); 	return;   }
+	Loop::addPeriodicTimer(0.7, function ()  {
+	    if (($this->Ubf === 0) || !$this->adbReader->isOpen()) { $this->resetHeartBeat(); 	return;   }
 	    battLogCl::noop((string)($this->hbi % 10));
 	});
     }
@@ -37,7 +37,7 @@ class GrandCentralBattCl {
     private readonly object $adbReader;
     private readonly object $usbo;
     public  readonly object $shcmo;
-    private	     int    $Ubf = 0;
+    private	     int | float    $Ubf = 0;
     private readonly object $adbdevo;
     private readonly object $avahio;
 
@@ -85,7 +85,7 @@ class GrandCentralBattCl {
 
 	$now = time();
 
-	if ($this->suppressLevel) {
+	if ($this->discharging) {
 	    beout('');
 	    $prev = '';
 	    $U = $now;
@@ -106,21 +106,25 @@ class GrandCentralBattCl {
     }
 
     private function doLevelFromFile() {
+
+	if (microtime(true) - $this->Ubf < 2) return;
+
+
 	$dis = self::doShCmd(shCmdCl::asbscmdConst);
 	if ($dis === 'Discharging') {
 	    belg($dis, true);
-	    $this->suppressLevel = true;
+	    $this->discharging = true;
 	}
 
 	$res = adbBattCl::levFromPhFileStr(self::doShCmd(shCmdCl::asbccmdConst));
 	if ($res < 0) { 
 	    return $this->resetCF(false); 
 	} else {
-	    if (!$this->suppressLevel) beout($res);
+	    if (!$this->discharging) beout($res);
 	    $this->resetCF(true);
 	}
 
-	$this->Ubf = time();
+	$this->Ubf = microtime(true);
 
 	
     }
@@ -158,12 +162,12 @@ class GrandCentralBattCl {
 
 	if ($from === 'lines' && $type === 'batteryStatus') {
 	    // belg('battStatus: ' . $dat);
-	    if ($dat === 3) $this->suppressLevel = true;
-	    else	    $this->suppressLevel = false;
+	    if ($dat === 3) $this->discharging = true;
+	    else	    $this->discharging = false;
 	}
     }
 
-    private bool $suppressLevel = false;
+    private bool $discharging = false;
 
     private function initSignals() {
 	pcntl_async_signals(true);

@@ -22,7 +22,7 @@ class shCmdCl {
 	}
     }
 
-    private function brightness(int $bright) {
+    public function brightness(int $bright) {
 	$c  = '';
 	$c .= $this->adbPrefix();
 	$c .= 'shell settings put system screen_brightness ' . $bright . ' 2>&1 ';
@@ -55,7 +55,7 @@ class shCmdCl {
 	$t .= 'adb';
 	$t .= ' ';
 
-	$t .= $this->devo->thedevice ? (' -s ' . $this->devo->thedevice . ' ' ) : '';
+	$t .= $this->devo->thedevice ? ('-s ' . $this->devo->thedevice . ' ' ) : '';
 
 	return $t;
     }

@@ -27,7 +27,8 @@ class battLogCl {
 	if (!$ishb || $hbl <= 1) {
 	    $t .= $i;
 	    $t .= ' ';
-	    $t .= date('H:i:s');
+	    $now = new DateTimeImmutable();
+	    $t .= $now->format('Y-m-d H:i:s.v');
 	    $t .= ' ';
 	    if ($star || $emitting) $t .= '********* ';
 	    if ($emitting) $t .= 'emitting ';
