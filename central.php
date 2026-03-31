@@ -14,6 +14,11 @@ require_once('brightness.php');
 
 class GrandCentralBattCl {
 
+    private function blank ()	      {	$this->outNonL('');   }
+    private function outLev (int $lev) { beout($lev); }
+    private function outNonL(string $s) { beout($s); }
+
+
     public function confirmedTimestamp() {
 	battLogCl::noop('.');
 	$this->resetHeartBeat();
@@ -43,7 +48,7 @@ class GrandCentralBattCl {
 
     
     public function __construct() {
-	beout('');
+	$this->blank();
 	battKillCl::killPrev();
 	$this->adbdevo = new adbDevicesCl($this);
 	$this->shcmo = new shCmdCl($this->adbdevo);
@@ -64,7 +69,7 @@ class GrandCentralBattCl {
 
     private function resetCF(bool $isGood) {
 	if ($this->termed ?? false) $isGood = false;
-	if (!$isGood) beout('');
+	if (!$isGood) $this->blank();
 
 	if ($this->termed ?? false) return;
 
@@ -86,7 +91,7 @@ class GrandCentralBattCl {
 	$now = time();
 
 	if ($this->discharging) {
-	    beout('');
+	    $this->blank();
 	    $prev = '';
 	    $U = $now;
 	    belg('-');
@@ -98,7 +103,7 @@ class GrandCentralBattCl {
 	if (($lev === $prev) && ($now - $this->Ubf < 5)) return;
 
 	if (($lev !== $prev) || ($now - $U > 30)) {
-	    beout($lev);
+	    $this->outLev($lev);
 	    $prev = $lev;
 	    $U = $now;
 	}
@@ -120,7 +125,7 @@ class GrandCentralBattCl {
 	if ($res < 0) { 
 	    return $this->resetCF(false); 
 	} else {
-	    if (!$this->discharging) beout($res);
+	    if (!$this->discharging) $this->outLev($res);
 	    $this->resetCF(true);
 	}
 
@@ -153,8 +158,11 @@ class GrandCentralBattCl {
 
 	if ($from === 'devices') {
 	    belg('devices response is ' . $type);
-	    if	    ($type === 'perm') beout('need permission');
-	    else if ($type === 'found') $this->doLevelFromFile();
+	    if	    ($type === 'perm') $this->outNonL('need permission');
+	    else if ($type === 'found') {
+		usleep(300000);
+		$this->doLevelFromFile();
+	    }
 	    else {
 		belg('from devices: ' . $type);
 	    }
@@ -179,7 +187,7 @@ class GrandCentralBattCl {
 
     public function exit() {
 	$this->termed = true;
-	beout('');
+	$this->blank();
 	belg('b3 e-xit called' . "\n");
 	if (isset($this->avahio)) { $this->avahio->close(); }
 	belg('k-illing adbReader');
@@ -191,7 +199,7 @@ class GrandCentralBattCl {
 	belg('k-illing usb (from central) - end');
 	$loop = Loop::get();
 	$loop->stop();
-	beout('');
+	$this->blank();
 	belg('before lock release');
 	PidFileGuard::release();
 	belg('after lock release');
